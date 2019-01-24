@@ -207,6 +207,15 @@ public class BarcodeScanner extends CordovaPlugin {
         });
     }
 
+    String byteArrayToString(byte[] in) {
+        char out[] = new char[in.length * 2];
+        for (int i = 0; i < in.length; i++) {
+            out[i * 2] = "0123456789ABCDEF".charAt((in[i] >> 4) & 15);
+            out[i * 2 + 1] = "0123456789ABCDEF".charAt(in[i] & 15);
+        }
+        return new String(out);
+    }
+
     /**
      * Called when the barcode scanner intent completes.
      *
@@ -223,7 +232,7 @@ public class BarcodeScanner extends CordovaPlugin {
                 try {
                     obj.put(TEXT, intent.getStringExtra("SCAN_RESULT"));
                     obj.put(FORMAT, intent.getStringExtra("SCAN_RESULT_FORMAT"));
-                    obj.put(RAW_DATA, intent.getByteArrayExtra("SCAN_RESULT_BYTES"));
+                    obj.put(RAW_DATA, this.byteArrayToString(intent.getByteArrayExtra("SCAN_RESULT_BYTES")));
                     obj.put(CANCELLED, false);
                 } catch (JSONException e) {
                     Log.d(LOG_TAG, "This should never happen");
